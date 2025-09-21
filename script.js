@@ -8,15 +8,15 @@ const Gameboard = (function () {
   /**
    *
    * @param {number} cellNum
-   * @param {string} mark
+   * @param {string} marker
    */
-  function fillGameboardCell(cellNum, mark) {
+  function fillGameboardCell(cellNum, marker) {
     if (
       cellNum <= gameboard.length &&
       gameboard[cellNum - 1] === '-' &&
       emptyCells > 0
     ) {
-      gameboard[cellNum - 1] = mark;
+      gameboard[cellNum - 1] = marker;
       emptyCells--;
     }
   }
@@ -45,7 +45,7 @@ const Gameboard = (function () {
 
 Gameboard.renderGameboard();
 
-function Player(name, mark, isActive) {
+function Player(name, marker, isActive) {
   let isActivePlayer = isActive;
 
   const getActiveStatus = () => isActivePlayer;
@@ -56,7 +56,7 @@ function Player(name, mark, isActive) {
 
   return {
     name,
-    mark,
+    marker,
     getActiveStatus,
     toggleActiveStatus,
   };
@@ -79,15 +79,15 @@ const GameController = (function () {
 
   let isFinished = false;
 
-  const getPlayerInput = (mark) => {
-    const cellNum = +prompt('Please enter a number from 1 to 9');
-    return { cellNum, mark };
-  };
+  // const getPlayerInput = (marker) => {
+  //   const cellNum = +prompt('Please enter a number from 1 to 9');
+  //   return { cellNum, marker };
+  // };
 
   function checkWin() {
     let isWin = false;
-    let winMark = null;
-    const marks = ['X', 'O'];
+    let winMarker = null;
+    const markers = ['X', 'O'];
 
     wins.forEach((winArr) => {
       const [a, b, c] = winArr;
@@ -96,28 +96,28 @@ const GameController = (function () {
         return index === a || index === b || index === c;
       });
 
-      marks.forEach((mark) => {
-        if (filtGameboard.every((item) => item === mark)) {
+      markers.forEach((marker) => {
+        if (filtGameboard.every((item) => item === marker)) {
           isWin = true;
-          winMark = filtGameboard[0];
+          winMarker = filtGameboard[0];
         }
       });
     });
 
-    return { isWin, winMark };
+    return { isWin, winMarker };
   }
 
   /**
-   * @param {string} winMark
-   * @param {array} playerMarks
+   * @param {string} winMarker
+   * @param {array} playerMarkers
    * @returns {string} Announcement of the winner
    */
-  function declareResult(winMark, playerMarks) {
-    const [playerOneMark, playerTwoMark] = playerMarks;
+  function declareResult(winMarker, playerMarkers) {
+    const [playerOneMarker, playerTwoMarker] = playerMarkers;
 
-    if (winMark === playerOneMark) {
+    if (winMarker === playerOneMarker) {
       console.log(`${playerOne.name} wins!`);
-    } else if (winMark === playerTwoMark) {
+    } else if (winMarker === playerTwoMarker) {
       console.log(`${playerTwo.name} wins!`);
     } else {
       console.log("It's a draw!");
@@ -143,8 +143,8 @@ const GameController = (function () {
 
   function playRound() {
     const activePlayer = getActivePlayer([playerOne, playerTwo]);
-    const playerInput = getPlayerInput(activePlayer.mark);
-    Gameboard.fillGameboardCell(playerInput.cellNum, playerInput.mark);
+    const playerInput = getPlayerInput(activePlayer.marker);
+    Gameboard.fillGameboardCell(playerInput.cellNum, playerInput.marker);
     Gameboard.renderGameboard();
     toggleActivePlayer([playerOne, playerTwo]);
   }
@@ -156,10 +156,9 @@ const GameController = (function () {
         break;
       }
       playRound();
-      console.log(checkWin().isWin);
     }
 
-    declareResult(checkWin().winMark, [playerOne.mark, playerTwo.mark]);
+    declareResult(checkWin().winMarker, [playerOne.marker, playerTwo.marker]);
   }
 
   return { playGame };
