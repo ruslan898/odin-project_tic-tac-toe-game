@@ -1,56 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tic Tac Toe Game</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <div class="players-info-block">
-      <div class="player-info">
-        <h2 class="player-number">Player One</h2> <div class="player-marker">Marker: <span>X</span></div>
-        <h2 class="player-name">sdsdds</h2>
-        <div class="player-name-input">
-          <label for="player-one-name">Please enter your name (Optional)</label>
-          <input type="text" id="player-one-name" maxlength="40">
-          <button type="button" class="btn">OK</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic Tac Toe Game</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="players-info-block">
+        <div class="player-info">
+          <h2 class="player-number">Player One</h2>
+          <div class="player-marker">Marker: <span>X</span></div>
+          <h2 class="player-name hide">Name: <span></span></h2>
+          <div class="player-name-input" id="player-one-input">
+            <label for="player-one-name">Please enter your name</label>
+            <input
+              type="text"
+              id="player-one-name"
+              data-name-num="1"
+              maxlength="40"
+            />
+            <button type="button" class="btn">OK</button>
+          </div>
+        </div>
+        <div class="player-info">
+          <h2 class="player-number">Player Two</h2>
+          <div class="player-marker">Marker: <span>O</span></div>
+          <h2 class="player-name hide">Name: <span></span></h2>
+          <div class="player-name-input" id="player-two-input">
+            <label for="player-two-name">Please enter your name</label>
+            <input
+              type="text"
+              id="player-two-name"
+              data-name-num="2"
+              maxlength="40"
+            />
+            <button type="button" class="btn">OK</button>
+          </div>
         </div>
       </div>
-      <div class="player-info">
-        <h2 class="player-number">Player Two</h2> <div class="player-marker">Marker: <span>O</span></div>
-        <h2 class="player-name">sdsadsad</h2>
-        <div class="player-name-input">
-          <label for="player-two-name">Please enter your name (Optional)</label>
-          <input type="text" id="player-two-name" maxlength="40">
-          <button type="button" class="btn">OK</button>
-        </div>
+
+      <h1 class="game-title txt-ctr">Tic Tac Toe</h1>
+      <button type="button" class="btn" id="btn-start">Start Game</button>
+      <h2 class="player-turn txt-ctr hide"></h2>
+
+      <div class="gameboard hide">
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
       </div>
+
+      <h2 class="game-result txt-ctr hide"></h2>
+      <button type="button" class="btn hide" id="btn-restart">
+        Play Again
+      </button>
     </div>
 
-
-    <h1 class="game-title txt-ctr">Tic Tac Toe</h1>
-    <button type="button" class="btn" id="btn-start">Start Game</button>
-    <h2 class="player-turn txt-ctr hide">Player One's Turn</h2>
-
-    <div class="gameboard">
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-    </div>
-
-
-    <h2 class="game-result txt-ctr"></h2>
-    <button type="button" class="btn hide" id="btn-restart">Play Again</button>
-  </div>
-
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
