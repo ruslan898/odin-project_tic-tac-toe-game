@@ -1,103 +1,97 @@
-const Gameboard = (function () {
-  const gameboard = ['', '', '', '', '', '', '', '', ''];
-
-  const getGameboard = () => [...gameboard];
-
-  let emptyCells = gameboard.reduce((count, cell) => {
+const Gameboard = new (class {
+  #gameboard = ['', '', '', '', '', '', '', '', ''];
+  #emptyCells = this.#gameboard.reduce((count, cell) => {
     return !cell ? ++count : count;
   }, 0);
+  #gameboardCells = document.querySelectorAll('.cell');
 
-  const gameboardCells = document.querySelectorAll('.cell');
+  getGameboard() {
+    return [...this.#gameboard];
+  }
 
-  const updateEmptyCells = () => {
-    emptyCells = gameboard.reduce((count, cell) => {
+  #updateEmptyCells() {
+    this.#emptyCells = this.#gameboard.reduce((count, cell) => {
       return !cell ? ++count : count;
     }, 0);
-  };
+  }
 
-  /**
-   *
-   * @param {number} cellNum
-   * @param {string} marker
-   */
-  function fillGameboardCell(cellNum, marker) {
+  fillGameboardCell(cellNum, marker) {
     if (
-      cellNum <= gameboard.length &&
-      gameboard[cellNum] === '' &&
-      emptyCells > 0
+      cellNum <= this.#gameboard.length &&
+      this.#gameboard[cellNum] === '' &&
+      this.#emptyCells > 0
     ) {
-      gameboard[cellNum] = marker;
-      updateEmptyCells();
+      this.#gameboard[cellNum] = marker;
+      this.#updateEmptyCells();
     }
   }
 
-  const getEmptyCells = () => emptyCells;
+  getEmptyCells() {
+    return this.#emptyCells;
+  }
 
-  function renderGameboard() {
-    gameboard.forEach((cell, i) => {
-      gameboardCells[i].textContent = cell;
+  renderGameboard() {
+    this.#gameboard.forEach((cell, i) => {
+      this.#gameboardCells[i].textContent = cell;
     });
   }
 
-  function clearGameboard() {
-    for (let i = 0; i < gameboard.length; i++) {
-      gameboard[i] = '';
+  clearGameboard() {
+    for (let i = 0; i < this.#gameboard.length; i++) {
+      this.#gameboard[i] = '';
     }
-    updateEmptyCells();
+    this.#updateEmptyCells();
   }
-
-  return {
-    getGameboard,
-    fillGameboardCell,
-    renderGameboard,
-    getEmptyCells,
-    clearGameboard,
-  };
 })();
 
-function Player(name, marker, isActive) {
-  let isActivePlayer = isActive;
+class Player {
+  #name;
+  #marker;
+  #isActivePlayer;
+  constructor(name, marker, isActive) {
+    this.#name = name;
+    this.#marker = marker;
+    this.#isActivePlayer = isActive;
+  }
 
-  const getActiveStatus = () => isActivePlayer;
+  getActiveStatus() {
+    return this.#isActivePlayer;
+  }
 
-  const toggleActiveStatus = () => {
-    isActivePlayer = !isActivePlayer;
-  };
+  toggleActiveStatus() {
+    this.#isActivePlayer = !this.#isActivePlayer;
+  }
 
-  function clearNames() {
+  clearNames() {
     playerOne.changeName('Player One');
     playerTwo.changeName('Player Two');
   }
 
-  const clearActiveStatus = () => {
+  clearActiveStatus() {
     if (playerTwo.getActiveStatus()) {
       playerTwo.toggleActiveStatus();
       playerOne.toggleActiveStatus();
     }
-  };
+  }
 
-  const getName = () => name;
+  getName() {
+    return this.#name;
+  }
 
-  const changeName = (newName) => (name = newName);
+  changeName(newName) {
+    this.#name = newName;
+  }
 
-  const getMarker = () => marker;
-
-  return {
-    getActiveStatus,
-    toggleActiveStatus,
-    getName,
-    changeName,
-    getMarker,
-    clearNames,
-    clearActiveStatus,
-  };
+  getMarker() {
+    return this.#marker;
+  }
 }
 
-const playerOne = Player('Player One', 'X', true);
-const playerTwo = Player('Player Two', 'O', false);
+const playerOne = new Player('Player One', 'X', true);
+const playerTwo = new Player('Player Two', 'O', false);
 
-const GameController = (function () {
-  const wins = [
+const GameController = new (class {
+  #wins = [
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
@@ -108,18 +102,22 @@ const GameController = (function () {
     [2, 4, 6],
   ];
 
-  let isFinished = false;
+  #isFinished = false;
 
-  const getFinishedStatus = () => isFinished;
+  getFinishedStatus() {
+    return this.#isFinished;
+  }
 
-  const resetFinishedStatus = () => (isFinished = false);
+  resetFinishedStatus() {
+    this.#isFinished = false;
+  }
 
-  function checkWin() {
+  #checkWin() {
     let isWin = false;
     let winMarker = null;
     const markers = ['X', 'O'];
 
-    wins.forEach((winArr) => {
+    this.#wins.forEach((winArr) => {
       const [a, b, c] = winArr;
 
       const filtGameboard = Gameboard.getGameboard().filter((cell, index) => {
@@ -137,12 +135,7 @@ const GameController = (function () {
     return { isWin, winMarker };
   }
 
-  /**
-   * @param {string} winMarker
-   * @param {array} playerMarkers
-   * @returns {string} Announcement of the winner
-   */
-  function declareResult(winMarker, playerMarkers) {
+  declareResult(winMarker, playerMarkers) {
     const [playerOneMarker, playerTwoMarker] = playerMarkers;
 
     if (winMarker === playerOneMarker) {
@@ -154,143 +147,136 @@ const GameController = (function () {
     }
   }
 
-  /**
-   * @param {array} players
-   * @returns {object} Active player object
-   */
-  function getActivePlayer(players) {
+  getActivePlayer(players) {
     return players.find((player) => player.getActiveStatus() === true);
   }
 
-  /**
-   * @param {array} players
-   */
-  function toggleActivePlayer(players) {
+  #toggleActivePlayer(players) {
     players.forEach((player) => {
       player.toggleActiveStatus();
     });
   }
 
-  function playRound(index) {
-    const activePlayer = getActivePlayer([playerOne, playerTwo]);
+  playRound(index) {
+    const activePlayer = this.getActivePlayer([playerOne, playerTwo]);
     const playerInput = activePlayer.getMarker();
     Gameboard.fillGameboardCell(index, playerInput);
     Gameboard.renderGameboard();
-    toggleActivePlayer([playerOne, playerTwo]);
+    this.#toggleActivePlayer([playerOne, playerTwo]);
   }
 
-  function endGame() {
-    if (checkWin().isWin === true || Gameboard.getEmptyCells() <= 0) {
-      isFinished = true;
-      const result = declareResult(checkWin().winMarker, [
+  endGame() {
+    if (this.#checkWin().isWin === true || Gameboard.getEmptyCells() <= 0) {
+      this.#isFinished = true;
+      const result = this.declareResult(this.#checkWin().winMarker, [
         playerOne.getMarker(),
         playerTwo.getMarker(),
       ]);
       Display.displayResult(result);
     }
   }
-
-  return {
-    endGame,
-    getActivePlayer,
-    declareResult,
-    playRound,
-    getFinishedStatus,
-    resetFinishedStatus,
-  };
 })();
 
-const Display = (function () {
-  const playerNames = document.querySelectorAll('.player-name');
-  const playerNameSpans = document.querySelectorAll('.player-name span');
-  const playerInputs = document.querySelectorAll('.player-name-input');
-  const btnStart = document.querySelector('#btn-start');
-  const btnRestart = document.querySelector('#btn-restart');
-  const gameboard = document.querySelector('.gameboard');
-  const gameboardCells = document.querySelectorAll('.cell');
-  const playerTurn = document.querySelector('.player-turn');
-  const gameResultEl = document.querySelector('.game-result');
+const Display = new (class {
+  #playerNames = document.querySelectorAll('.player-name');
+  #playerNameSpans = document.querySelectorAll('.player-name span');
+  #playerInputs = document.querySelectorAll('.player-name-input');
+  #btnStart = document.querySelector('#btn-start');
+  #btnRestart = document.querySelector('#btn-restart');
+  #gameboard = document.querySelector('.gameboard');
+  #gameboardCells = document.querySelectorAll('.cell');
+  #playerTurn = document.querySelector('.player-turn');
+  #gameResultEl = document.querySelector('.game-result');
 
-  function hideElements(...elems) {
+  #hideElements(...elems) {
     elems.forEach((elem) => elem.classList.add('hide'));
   }
-  function showElements(...elems) {
+
+  #showElements(...elems) {
     elems.forEach((elem) => elem.classList.remove('hide'));
   }
-  function displayPlayerTurn() {
+
+  #displayPlayerTurn() {
     const activePlayer = GameController.getActivePlayer([playerOne, playerTwo]);
-    playerTurn.textContent = `${activePlayer.getName()}'s turn`;
+    this.#playerTurn.textContent = `${activePlayer.getName()}'s turn`;
   }
-  function displayResult(result) {
-    gameResultEl.textContent = result;
-    showElements(gameResultEl, btnRestart);
-    hideElements(playerTurn);
+
+  displayResult(result) {
+    this.#gameResultEl.textContent = result;
+    this.#showElements(this.#gameResultEl, this.#btnRestart);
+    this.#hideElements(this.#playerTurn);
   }
-  function clearInputs() {
-    playerInputs.forEach((el) => {
+
+  #clearInputs() {
+    this.#playerInputs.forEach((el) => {
       const input = el.querySelector('input');
       input.value = '';
     });
   }
-  function clearTextContent(...elems) {
+
+  #clearTextContent(...elems) {
     elems.forEach((elem) => (elem.textContent = ''));
   }
 
-  playerInputs.forEach((input) => {
-    input.addEventListener('click', function (e) {
-      if (e.target.classList.contains('btn')) {
-        const input = this.querySelector('input');
-        const inputNum = input.dataset.nameNum;
-        const inputValue = input.value;
-        if (inputValue) {
-          showElements(playerNames[inputNum - 1]);
-          playerNameSpans[inputNum - 1].textContent = inputValue;
-          if (inputNum === '1') {
-            playerOne.changeName(inputValue);
-          } else {
-            playerTwo.changeName(inputValue);
+  bindEvents() {
+    this.#playerInputs.forEach((input) => {
+      input.addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn')) {
+          const inputField = input.querySelector('input');
+          const inputNum = inputField.dataset.nameNum;
+          const inputValue = inputField.value;
+          if (inputValue) {
+            this.#showElements(this.#playerNames[inputNum - 1]);
+            this.#playerNameSpans[inputNum - 1].textContent = inputValue;
+            if (inputNum === '1') {
+              playerOne.changeName(inputValue);
+            } else {
+              playerTwo.changeName(inputValue);
+            }
+            this.#hideElements(input);
           }
-          hideElements(this);
         }
+      });
+    });
+
+    this.#btnStart.addEventListener('click', () => {
+      const haveNames = [...this.#playerNameSpans].every(
+        (span) => span.textContent
+      );
+      if (haveNames) {
+        this.#hideElements(this.#btnStart);
+        this.#showElements(this.#gameboard, this.#playerTurn);
+        this.#displayPlayerTurn();
       }
     });
-  });
 
-  btnStart.addEventListener('click', function () {
-    const haveNames = [...playerNameSpans].every((span) => span.textContent);
-    if (haveNames) {
-      hideElements(this);
-      showElements(gameboard, playerTurn);
-      displayPlayerTurn();
-    }
-  });
-
-  gameboardCells.forEach(function (cell, index) {
-    cell.addEventListener('click', function () {
-      if (!GameController.getFinishedStatus()) {
-        GameController.playRound(index);
-        displayPlayerTurn();
-        GameController.endGame();
-      }
+    this.#gameboardCells.forEach((cell, index) => {
+      cell.addEventListener('click', () => {
+        if (!GameController.getFinishedStatus()) {
+          GameController.playRound(index);
+          this.#displayPlayerTurn();
+          GameController.endGame();
+        }
+      });
     });
-  });
 
-  btnRestart.addEventListener('click', function () {
-    Gameboard.clearGameboard();
-    playerOne.clearNames();
-    playerOne.clearActiveStatus();
-    GameController.resetFinishedStatus();
-    clearInputs();
-    hideElements(
-      ...playerNames,
-      btnRestart,
-      gameboard,
-      playerTurn,
-      gameResultEl
-    );
-    showElements(...playerInputs, btnStart);
-    clearTextContent(...playerNameSpans, ...gameboardCells);
-  });
-
-  return { displayResult };
+    this.#btnRestart.addEventListener('click', () => {
+      Gameboard.clearGameboard();
+      playerOne.clearNames();
+      playerOne.clearActiveStatus();
+      GameController.resetFinishedStatus();
+      this.#clearInputs();
+      this.#hideElements(
+        ...this.#playerNames,
+        this.#btnRestart,
+        this.#gameboard,
+        this.#playerTurn,
+        this.#gameResultEl
+      );
+      this.#showElements(...this.#playerInputs, this.#btnStart);
+      this.#clearTextContent(...this.#playerNameSpans, ...this.#gameboardCells);
+    });
+  }
 })();
+
+Display.bindEvents();
